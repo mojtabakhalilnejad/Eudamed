@@ -22,8 +22,12 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      # ubuntu-latest runners already ship with an Android SDK (ANDROID_HOME is preset), so we
+      # only need to accept the SDK licenses; AGP downloads any missing platform/build-tools
+      # itself during the Gradle build. This avoids relying on the third-party
+      # android-actions/setup-android action, which has been failing intermittently.
+      - name: Accept Android SDK licenses
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
