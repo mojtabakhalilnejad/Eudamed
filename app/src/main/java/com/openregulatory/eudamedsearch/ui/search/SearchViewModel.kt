@@ -30,11 +30,14 @@ data class SearchUiState(
     val hasMore: Boolean get() = page + 1 < totalPages
 }
 
-class SearchViewModel(
-    application: Application,
-    private val repository: DeviceRepository = DeviceRepository()
-) : AndroidViewModel(application) {
+// Compose's default viewModel() factory can only instantiate an AndroidViewModel through its
+// single-argument (Application) constructor (found via reflection); a second constructor
+// parameter — even with a default value — compiles fine but makes that constructor
+// unreachable to the factory and crashes the app on launch with NoSuchMethodException. So the
+// repository is a plain field, not a constructor parameter.
+class SearchViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val repository: DeviceRepository = DeviceRepository()
     private val settings = SettingsStore(application)
 
     private val _uiState = MutableStateFlow(SearchUiState(officialApiKey = settings.officialApiKey))
