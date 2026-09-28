@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme for the splash/launch window; the actual UI theming
+         is driven by Compose (see ui/theme/Theme.kt). -->
+    <style name="Theme.EudamedSearch" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/eu_blue</item>
+        <item name="android:windowBackground">@color/surface_light</item>
+    </style>
+</resources>

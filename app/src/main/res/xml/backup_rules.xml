@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- No sensitive local data other than the optional official-API subscription key,
+         which is excluded from backup for safety. -->
+    <exclude domain="sharedpref" path="eudamed_prefs.xml" />
+</full-backup-content>

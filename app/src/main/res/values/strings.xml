@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EUDAMED Search</string>
+
+    <string name="search_title">جستجوی دستگاه‌های پزشکی در EUDAMED</string>
+    <string name="field_product_name">اسم محصول / نام تجاری</string>
+    <string name="field_manufacturer">نام کمپانی سازنده</string>
+    <string name="field_country">کشور سازنده</string>
+    <string name="field_risk_class">کلاس ریسک</string>
+    <string name="field_device_status">وضعیت دستگاه</string>
+    <string name="field_legislation">نوع قانون (MDR / IVDR)</string>
+    <string name="field_udi">شماره UDI / کد شناسایی</string>
+    <string name="field_reg_date">تاریخ ثبت (از - تا)</string>
+    <string name="field_ce_date">تاریخ گرفتن CE (از - تا)</string>
+    <string name="from">از</string>
+    <string name="to">تا</string>
+    <string name="btn_search">جستجو</string>
+    <string name="btn_clear">پاک کردن فیلترها</string>
+    <string name="source_toggle">منبع داده</string>
+    <string name="source_site">سایت EUDAMED (کامل، بدون نیاز به کلید)</string>
+    <string name="source_official">API رسمی DG SANTE (نیاز به کلید مشترکین)</string>
+    <string name="results_count">%1$d نتیجه</string>
+    <string name="no_results">نتیجه‌ای یافت نشد. فیلترها را کم کنید یا جستجوی مشابه را امتحان کنید.</string>
+    <string name="loading">در حال جستجو…</string>
+    <string name="load_more">بارگذاری موارد بیشتر</string>
+    <string name="error_generic">خطا در دریافت اطلاعات: %1$s</string>
+    <string name="retry">تلاش دوباره</string>
+    <string name="fuzzy_hint">می‌توانید تایپ ناقص یا مشابه وارد کنید؛ گزینه‌های نزدیک نمایش داده می‌شوند</string>
+    <string name="detail_title">جزئیات دستگاه</string>
+    <string name="official_api_key_title">کلید API رسمی EUDAMED</string>
+    <string name="official_api_key_hint">Subscription Key</string>
+    <string name="save">ذخیره</string>
+    <string name="settings">تنظیمات</string>
+</resources>
