@@ -75,7 +75,10 @@ fun FuzzyComboBox(
                 .fillMaxWidth()
         )
 
-        androidx.compose.material3.ExposedDropdownMenu(
+        // ExposedDropdownMenu is a member of ExposedDropdownMenuBoxScope (the implicit receiver of
+        // this trailing lambda), not a top-level function, so it's called bare here — same as
+        // menuAnchor() above — rather than imported or package-qualified.
+        ExposedDropdownMenu(
             expanded = expanded && suggestions.isNotEmpty(),
             onDismissRequest = { expanded = false }
         ) {

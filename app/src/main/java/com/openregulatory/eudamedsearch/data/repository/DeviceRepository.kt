@@ -6,10 +6,10 @@ import com.openregulatory.eudamedsearch.data.model.DeviceDetailResponse
 import com.openregulatory.eudamedsearch.data.model.DeviceSearchFilters
 import com.openregulatory.eudamedsearch.data.model.DeviceSearchResult
 import com.openregulatory.eudamedsearch.data.model.DeviceSummary
-import com.openregulatory.eudamedsearch.data.model.OfficialDeviceRecord
 import com.openregulatory.eudamedsearch.data.remote.EudamedOfficialApi
 import com.openregulatory.eudamedsearch.data.remote.EudamedSiteApi
 import com.openregulatory.eudamedsearch.data.remote.NetworkModule
+import com.openregulatory.eudamedsearch.data.remote.OfficialDeviceRecord
 import com.openregulatory.eudamedsearch.util.FuzzyDate
 import com.openregulatory.eudamedsearch.util.FuzzyMatcher
 import kotlinx.coroutines.Dispatchers
