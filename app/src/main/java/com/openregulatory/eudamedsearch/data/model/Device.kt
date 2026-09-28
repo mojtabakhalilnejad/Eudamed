@@ -17,8 +17,27 @@ data class Device(
     val deviceStatusLabel: String?,
     val legislationLabel: String?,
     val lastUpdateDate: LocalDate?,
-    val source: DataSource
+    val source: DataSource,
+    /** The device's earliest CE-certificate date. The search endpoints never return this (only a
+     *  device's own detail page does), so it starts out null and is filled in lazily — see
+     *  [com.openregulatory.eudamedsearch.data.repository.DeviceRepository.fetchCeDate] — only when
+     *  the person actually asks to sort by it, rather than on every search result. */
+    val ceDate: LocalDate? = null
 )
+
+enum class SortOption {
+    DEFAULT,
+    PRODUCT_NAME_ASC,
+    MANUFACTURER_ASC,
+    RISK_CLASS,
+    UPDATED_NEWEST,
+    UPDATED_OLDEST,
+    CE_NEWEST,
+    CE_OLDEST;
+
+    /** Whether this sort needs each device's CE date fetched first (see [Device.ceDate]). */
+    val needsCeDate: Boolean get() = this == CE_NEWEST || this == CE_OLDEST
+}
 
 /** Search parameters gathered from the combo boxes / text fields on the search screen. All are
  *  optional; the ones that are combo boxes carry both a free-typed [text] (used for fuzzy matching)

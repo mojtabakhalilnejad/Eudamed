@@ -14,6 +14,7 @@ import com.openregulatory.eudamedsearch.util.FuzzyDate
 import com.openregulatory.eudamedsearch.util.FuzzyMatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 
 /**
  * Single entry point for everything device-search related. Hides the two very different EUDAMED
@@ -51,6 +52,17 @@ class DeviceRepository(
         runCatching {
             siteApi.getDeviceDetail(device.id, mapOf("languageIso2Code" to "en"))
         }.getOrNull()
+    }
+
+    /** Resolves a device's CE date on demand, for sorting/display: the earliest
+     *  issueDate/startingValidityDate across its certificates, or null when there is none (no
+     *  certificate yet, the device came from the official API, or the detail call failed — a
+     *  missing date is never treated as an error, just as "unknown"). */
+    suspend fun fetchCeDate(device: Device): LocalDate? = withContext(Dispatchers.IO) {
+        val detail = getDeviceDetail(device) ?: return@withContext null
+        detail.deviceCertificateInfoList.orEmpty()
+            .mapNotNull { FuzzyDate.parseApiDate(it.issueDate) ?: FuzzyDate.parseApiDate(it.startingValidityDate) }
+            .minOrNull()
     }
 
     /** Quick free-text lookup used to populate the product-name / manufacturer-name combo boxes

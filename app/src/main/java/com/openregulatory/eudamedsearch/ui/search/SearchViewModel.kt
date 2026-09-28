@@ -6,8 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.openregulatory.eudamedsearch.data.model.DataSource
 import com.openregulatory.eudamedsearch.data.model.Device
 import com.openregulatory.eudamedsearch.data.model.DeviceSearchFilters
+import com.openregulatory.eudamedsearch.data.model.SortOption
 import com.openregulatory.eudamedsearch.data.repository.DeviceRepository
 import com.openregulatory.eudamedsearch.data.repository.SettingsStore
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +29,9 @@ data class SearchUiState(
     val isLoadingMore: Boolean = false,
     val errorMessage: String? = null,
     val hasSearchedOnce: Boolean = false,
-    val officialApiKey: String = ""
+    val officialApiKey: String = "",
+    val sortOption: SortOption = SortOption.DEFAULT,
+    val isLoadingCeDates: Boolean = false
 ) {
     val hasMore: Boolean get() = page + 1 < totalPages
 }
@@ -64,7 +70,40 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun clearFilters() {
-        _uiState.update { it.copy(filters = DeviceSearchFilters(), devices = emptyList(), hasSearchedOnce = false) }
+        _uiState.update {
+            it.copy(
+                filters = DeviceSearchFilters(),
+                devices = emptyList(),
+                hasSearchedOnce = false,
+                sortOption = SortOption.DEFAULT
+            )
+        }
+    }
+
+    /** Changes the active sort. CE-date sorts need each visible device's certificate date, which
+     *  the search endpoints never return — so the first time such a sort is picked, this fetches
+     *  the missing dates (in parallel, one detail call per device) before applying it; devices
+     *  that already have a [Device.ceDate] (from a previous CE sort) aren't re-fetched. */
+    fun setSortOption(option: SortOption) {
+        val current = _uiState.value
+        if (!option.needsCeDate || current.devices.all { it.ceDate != null }) {
+            _uiState.update { it.copy(sortOption = option) }
+            return
+        }
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoadingCeDates = true) }
+            val withDates = coroutineScope {
+                current.devices.map { device ->
+                    async {
+                        if (device.ceDate != null) device
+                        else device.copy(ceDate = runCatching { repository.fetchCeDate(device) }.getOrNull())
+                    }
+                }.awaitAll()
+            }
+            _uiState.update {
+                it.copy(devices = withDates, sortOption = option, isLoadingCeDates = false)
+            }
+        }
     }
 
     suspend fun suggestProductNames(partial: String): List<String> = repository.suggestProductNames(partial)
@@ -73,7 +112,17 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     fun search() {
         val state = _uiState.value
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null, hasSearchedOnce = true) }
+            // A fresh search means fresh devices with no ceDate fetched yet, so a previously
+            // selected CE sort can no longer be honoured without re-fetching — reset to default
+            // rather than silently sorting the new list as if those dates were still known.
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    errorMessage = null,
+                    hasSearchedOnce = true,
+                    sortOption = SortOption.DEFAULT
+                )
+            }
             runCatching {
                 repository.search(
                     filters = state.filters,
